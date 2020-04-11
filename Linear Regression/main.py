@@ -26,16 +26,18 @@ def reset():
     m = 1
     b = 0
 
-# Gradient Descent Algorithm for loss/error optimization
-def gradientDescent():
-    global m
-    global b
-    for x, y in points:
-        Y = m*x+b
-        error = Y-y
-        m = m-(error*x*lr)
-        b = b-(error*lr)
-    #print(m, b)
+train = False
+def startTrain():
+    global train
+    if train == True:
+        train = False
+        startBtn['text'] = "Start Training"
+        startBtn['background'] = "#5bc0de"
+    else:
+        train = True
+        startBtn['text'] = "Stop Training"
+        startBtn['background'] = "#f0ad4e"
+
 
 # Draw points in the canvas
 points = []
@@ -51,12 +53,25 @@ def drawPoint(event):
     y = map(y, 0, height, 1, 0)
     points.append((x, y))
 
+# Gradient Descent Algorithm for loss/error optimization
+def gradientDescent():
+    global m
+    global b
+    for x, y in points:
+        Y = m*x+b
+        error = Y-y
+        m = m-(error*x*lr)
+        b = b-(error*lr)
+    eqnLabel['text'] = "y = "+ str(round(m,2))+"x+"+str(round(b,2))
+
+
 # Draw linear line 
 lineId = None
 def drawLine():
     global lineId
     if len(points) >= 2:
-        gradientDescent()
+        if train == True:
+            gradientDescent()
 
         x1 = 0
         x2 = 1
@@ -87,6 +102,12 @@ lrScale.grid(row=0, column=0, rowspan=2)
 
 resetBtn = Button(header, text="Reset", background="#d9534f", command=reset)
 resetBtn.grid(row=0, column=1, padx=50)
+
+startBtn = Button(header, text="Start Training", background="#5bc0de", command=startTrain)
+startBtn.grid(row=1, column=1, padx=50)
+
+eqnLabel = Label(header, text="y = "+ str(m)+"x+"+str(b))
+eqnLabel.grid(row=2, column=0)
 
 drawing_area = Canvas(root, width=width, height=height,background="white")
 drawing_area.bind("<Button-1>", drawPoint)
